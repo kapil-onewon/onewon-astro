@@ -23,7 +23,7 @@ class Chart {
     }
 
     getObject(ID) {
-        return this.objects[ID] || null;
+        return this.objects.content[ID] || null;
     }
 
     getHouse(ID) {

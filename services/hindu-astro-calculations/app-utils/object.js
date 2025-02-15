@@ -18,10 +18,14 @@ class GenericObject {
     }
 
     static fromDict(_dict) {
-        const obj = new this();
-        Object.assign(obj, _dict);
+        let obj = new this(); // Creates a new instance of GenericObject
+        if (typeof _dict === "object" && _dict !== null) {
+          obj = _dict; // Assigns properties from _dict to obj
+        } else {
+          console.error("Invalid _dict:", _dict);
+        }
         return obj;
-    }
+      }
 
     copy() {
         return GenericObject.fromDict(this);

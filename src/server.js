@@ -13,10 +13,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.get('/', (req, res) => {
-    const dateTime = new Datetime('2015/03/13', '17:00', '+00:00');
-    const geoPos = new GeoPos('38n32', '8w54');
+    const dateTime = new Datetime('1999/04/15', '16:55', '+00:00');
+    const geoPos = new GeoPos('24n55', '79e35');
     const chart = new Chart(dateTime, geoPos);
     const response = chart.get('Sun');
+    console.log(response);
     res.status(200).json({data: {dateTime, geoPos, response}});
 });
 
