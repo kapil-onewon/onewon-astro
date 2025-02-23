@@ -35,7 +35,7 @@ function getObject(ID, jd, lat, lon) {
 function getHouses(jd, lat, lon, hsys) {
     const housesResponse = swe.sweHouses(jd, lat, lon, hsys);
     // console.log(housesResponse);
-    const {houses, angles} = housesResponse;
+    const [houses, angles] = housesResponse;
     houses.forEach(house => _signInfo(house));
     angles.forEach(angle => _signInfo(angle));
     return { houses, angles };

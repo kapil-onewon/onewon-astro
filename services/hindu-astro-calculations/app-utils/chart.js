@@ -14,8 +14,9 @@ class Chart {
         const IDs = options.IDs || LIST_OBJECTS_TRADITIONAL;
         this.objects = getObjectList(IDs, date, pos);
         const { houses, angles } = getHouses(date, pos, this.hsys);
-        this.houses = houses;
-        this.angles = angles;
+       
+        this.houses = houses.content;
+        this.angles = angles.content;
     }
 
     copy() {

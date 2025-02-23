@@ -45,20 +45,23 @@ function setPath(path) {
 function sweObject(obj, jd) {
     const sweObj = SWE_OBJECTS[obj];
     const response = swisseph.swe_calc_ut(jd, sweObj);
+    console.log('response :->', response);
     // return {};
     return {
         id: obj,
         lon: response.longitude,
         lat: response.latitude,
-        lonspeed: response.declinationSpeed,
+        lonspeed: response.longitudeSpeed,
         latspeed: response.latitudeSpeed
     };
 }
 
 function sweObjectLon(obj, jd) {
     const sweObj = SWE_OBJECTS[obj];
-    const [sweList, flg] = swisseph.swe_calc_ut(jd, sweObj);
-    return sweList[0];
+    const response = swisseph.swe_calc_ut(jd, sweObj);
+ 
+    // const [sweList, flg] = response;
+    return  response?.longitude;//sweList[0];
 }
 
 function sweNextTransit(obj, jd, lat, lon, flag) {
@@ -71,17 +74,25 @@ function sweNextTransit(obj, jd, lat, lon, flag) {
 // Houses and angles
 function sweHouses(jd, lat, lon, hsys) {
     const houseSystem = SWE_HOUSESYS[hsys];
-    const housesResponse = swisseph.swe_houses(jd, lat, lon, houseSystem);
-    const {house, ascendant, mc, armc, vertex, equatorialAscendant} = housesResponse;
-    const hlist = house;
+    const houseData = swisseph.swe_houses(jd, lat, lon, houseSystem);
+    // const {house, ascendant, mc, armc, vertex, equatorialAscendant} = housesResponse;
+   
+    const hlist = [...houseData.house, houseData.house[0]];
     // console.log(hlist);
 
-    hlist.push(hlist[0]);  // Add first house to the end of 'hlist'
+    // hlist.push(hlist[0]);  // Add first house to the end of 'hlist'
 
-    const houses = hlist.slice(0, 12).map((lon, i) => ({
+    // const houses = hlist.slice(0, 12).map((lon, i) => ({
+    //     id: consts.LIST_HOUSES[i],
+    //     lon,
+    //     size: angle.distance(lon, hlist[i + 1])
+    // }));
+
+     // Calculate houses with their properties
+     const houses = Array.from({ length: 12 }, (_, i) => ({
         id: consts.LIST_HOUSES[i],
-        lon,
-        size: angle.distance(lon, hlist[i + 1])
+        lon: hlist[i],
+        size: angle.distance(hlist[i], hlist[i + 1])
     }));
 
     // const angles = [
@@ -90,28 +101,34 @@ function sweHouses(jd, lat, lon, hsys) {
     //     { id: consts.DESC, lon: angle.norm(ascmc[0] + 180) },
     //     { id: consts.IC, lon: angle.norm(ascmc[1] + 180) }
     // ];
+
+    // Calculate angles with their properties
     const angles = [
-        { id: consts.ASC, lon: ascendant },
-        { id: consts.MC, lon: mc },
-        { id: consts.DESC, lon: angle.norm(armc + 180) },
-        { id: consts.IC, lon: angle.norm(vertex + 180) }
+        { id: 'ASC', lon: houseData.ascendant },
+        { id: 'MC', lon: houseData.mc },
+        { id: 'DESC', lon: angle.norm(houseData.ascendant + 180) },
+        { id: 'IC', lon: angle.norm(houseData.mc + 180) }
     ];
 
-    return { houses, angles };
+    return [ houses, angles ];
 }
 
 function sweHousesLon(jd, lat, lon, hsys) {
     const houseSystem = SWE_HOUSESYS[hsys];
-    const [hlist, ascmc] = swisseph.swe_houses(jd, lat, lon, houseSystem);
-
+    const houseData = swisseph.swe_houses(jd, lat, lon, houseSystem);
+    
+    // Extract house positions
+    const hlist = houseData.house;
+    
+    // Calculate angles (Ascendant, Midheaven, Descendant, IC)
     const angles = [
-        ascmc[0],
-        ascmc[1],
-        angle.norm(ascmc[0] + 180),
-        angle.norm(ascmc[1] + 180)
+        houseData.ascendant,                    // Ascendant
+        houseData.mc,                           // Midheaven
+        angle.norm(houseData.ascendant + 180), // Descendant
+        angle.norm(houseData.mc + 180)         // IC (Imum Coeli)
     ];
 
-    return { hlist, angles };
+    return [hlist, angles];
 }
 
 // Fixed stars

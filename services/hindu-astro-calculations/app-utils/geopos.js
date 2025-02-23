@@ -47,8 +47,8 @@ function toString(value, mode) {
 
 class GeoPos {
     constructor(lat, lon) {
-        this.lat = toFloat(lat);
-        this.lon = toFloat(lon);
+        this.lat =lat; // toFloat(lat);
+        this.lon =lon; //toFloat(lon);
     }
 
     slists() {
